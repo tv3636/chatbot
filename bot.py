@@ -1,4 +1,4 @@
-import os, discord, openai, time, json
+import os, discord, openai, time, json, re
 from dotenv import load_dotenv
 from discord.ext import tasks
 from collections import defaultdict
@@ -9,6 +9,8 @@ load_dotenv()
 discordToken = os.getenv('DISCORD_TOKEN')
 botUser = os.getenv('BOT_USERNAME')
 client = discord.Client()
+TAGGING_ENABLED = False
+TAG_REPLACE = os.getenv('TAG_REPLACE')
 
 # OpenAI Constants
 openai.api_key = os.environ.get('OPENAI_KEY')
@@ -19,6 +21,9 @@ delimiter = '\n###\n'
 # History Constants
 directory_prefix = "./channel_history_"
 last_n = 10
+
+def replaceTags(message):
+	return re.sub(r'<@.*>', TAG_REPLACE, message)
 
 def ask(sender, question):
 	global model
@@ -52,6 +57,8 @@ async def on_message(message):
 		text = ' '.join(message.content.split()[1:])
 		aiResponse = ask(sender, text)
 
+		print(aiResponse)
+
 		for response in aiResponse.split('\n' + botUser + ':'):
 			validResponse = True
 			
@@ -62,11 +69,12 @@ async def on_message(message):
 			if not validResponse:
 				break
 			elif response:
-				await message.channel.send(response)
+				await message.channel.send(replaceTags(response))
 				time.sleep(.2)
 	
-	# Collect chat history to build fine-tuning datasets	
+	# Collect chat history to build fine-tuning datasets
 
+	"""
 	elif not message.author.bot and message.content.split()[0] == '!history':
 		last = []
 		lastSender = None
@@ -113,6 +121,7 @@ async def on_message(message):
 
 			if len(last) > last_n:
 				last = last[1:]
+	"""
 
 
 client.run(discordToken)
