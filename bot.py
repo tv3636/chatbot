@@ -9,8 +9,7 @@ load_dotenv()
 discordToken = os.getenv('DISCORD_TOKEN')
 botUser = os.getenv('BOT_USERNAME')
 client = discord.Client()
-TAGGING_ENABLED = False
-TAG_REPLACE = os.getenv('TAG_REPLACE')
+tag_replace = os.getenv('TAG_REPLACE')
 
 # OpenAI Constants
 openai.api_key = os.environ.get('OPENAI_KEY')
@@ -23,7 +22,7 @@ directory_prefix = "./channel_history_"
 last_n = 10
 
 def replaceTags(message):
-	return re.sub(r'<@.*>', TAG_REPLACE, message)
+	return re.sub(r'<@.*>', tag_replace, message)
 
 def ask(sender, question):
 	global model
@@ -74,7 +73,6 @@ async def on_message(message):
 	
 	# Collect chat history to build fine-tuning datasets
 
-	"""
 	elif not message.author.bot and message.content.split()[0] == '!history':
 		last = []
 		lastSender = None
@@ -121,7 +119,6 @@ async def on_message(message):
 
 			if len(last) > last_n:
 				last = last[1:]
-	"""
 
 
 client.run(discordToken)
