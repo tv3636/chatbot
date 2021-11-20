@@ -6,9 +6,9 @@ from collections import defaultdict
 load_dotenv()
 
 # Discord Constants
-TOKEN = os.getenv('DISCORD_TOKEN')
-client = discord.Client()
+discordToken = os.getenv('DISCORD_TOKEN')
 botUser = os.getenv('BOT_USERNAME')
+client = discord.Client()
 
 # OpenAI Constants
 openai.api_key = os.environ.get('OPENAI_KEY')
@@ -64,7 +64,6 @@ async def on_message(message):
 			elif response:
 				await message.channel.send(response)
 				time.sleep(.2)
-
 	
 	# Collect chat history to build fine-tuning datasets	
 
@@ -91,7 +90,7 @@ async def on_message(message):
 						context = text['author'] + ': ' + text['message'] + '\n' + context
 						switch = True
 				
-				f = open(directory_prefix + channelName + '/' + lastSender + ".jsonl", "a")
+				f = open(directory_prefix + channelName + '/' + lastSender.replace('/', '') + ".jsonl", "a")
 				f.write(
 					str(
 						json.dumps(
@@ -116,4 +115,4 @@ async def on_message(message):
 				last = last[1:]
 
 
-client.run(TOKEN)
+client.run(discordToken)

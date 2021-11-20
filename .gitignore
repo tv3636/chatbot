@@ -1,6 +1,7 @@
 __pycache__
 .env
 .DS_Store
+*.jsonl
 
 /channel_history*
 /manual_tuning
