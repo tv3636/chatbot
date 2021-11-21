@@ -7,9 +7,9 @@ load_dotenv()
 
 # Discord Constants
 discordToken = os.getenv('DISCORD_TOKEN')
+tag_replace = os.getenv('TAG_REPLACE')
 botUser = os.getenv('BOT_USERNAME')
 client = discord.Client()
-tag_replace = os.getenv('TAG_REPLACE')
 
 # OpenAI Constants
 openai.api_key = os.environ.get('OPENAI_KEY')
