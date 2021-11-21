@@ -23,10 +23,10 @@ last_n = 10
 
 def replaceTags(message):
 	if '<@!' in message:
-		print(client.get_user(int(message[message.find('!') + 1:message.find('>')])))
+		print(client.fetch_user(int(message[message.find('!') + 1:message.find('>')])))
 	elif '<@' in message:
-		print(client.get_user(int(message[message.find('@') + 1:message.find('>')])))
-		
+		print(client.fetch_user(int(message[message.find('@') + 1:message.find('>')])))
+
 	return re.sub(r'<@.*>', tag_replace, message)
 
 def ask(sender, question):
