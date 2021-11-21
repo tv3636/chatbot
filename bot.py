@@ -68,11 +68,15 @@ async def on_message(message):
 			if not validResponse:
 				break
 			elif response:
+				# Clean up hanging tags
+				if response.split()[-1][0] == '<':
+					response = ' '.join(response.split()[:-1])
+
 				await message.channel.send(replaceTags(response))
 				time.sleep(.2)
 	
 	# Collect chat history to build fine-tuning datasets
-
+	"""
 	elif not message.author.bot and message.content.split()[0] == '!history':
 		last = []
 		lastSender = None
@@ -119,6 +123,7 @@ async def on_message(message):
 
 			if len(last) > last_n:
 				last = last[1:]
+	"""
 
 
 client.run(discordToken)
