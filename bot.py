@@ -7,7 +7,6 @@ load_dotenv()
 
 # Discord Constants
 discordToken = os.getenv('DISCORD_TOKEN')
-tag_replace = os.getenv('TAG_REPLACE')
 botUser = os.getenv('BOT_USERNAME')
 client = discord.Client()
 
@@ -20,9 +19,6 @@ delimiter = '\n###\n'
 # History Constants
 directory_prefix = "./channel_history_"
 last_n = 10
-
-def replaceTags(message):
-	return re.sub(r'<@.*>', tag_replace, message)
 
 def ask(sender, question):
 	global model
@@ -56,7 +52,7 @@ async def on_message(message):
 		text = ' '.join(message.content.split()[1:])
 		aiResponse = ask(sender, text)
 
-		print(aiResponse)
+		print(aiResponse.split('\n' + botUser + ':'))
 
 		for response in aiResponse.split('\n' + botUser + ':'):
 			validResponse = True
@@ -68,12 +64,20 @@ async def on_message(message):
 			if not validResponse:
 				break
 			elif response:
-				# Clean up hanging tags
-				if response.split()[-1][0] == '<':
-					response = ' '.join(response.split()[:-1])
+				if '<@' in response:
+					for match in re.findall('<@!?([0-9]*)>', response):
+						username = await client.fetch_user(int(match))
+						response = response.replace(response[response.find('<'):response.find('>') + 1], '@' + str(username)[:str(username).find('#')])
 
-				await message.channel.send(replaceTags(response))
-				time.sleep(.2)
+				if '\n' in response:
+					for out in response.split('\n'):
+						if out and out != '###' and out[0] != '<':
+							await message.channel.send(out)
+							time.sleep(.2)
+				else:
+					if response and response != '###' and response[0] != '<':
+						await message.channel.send(response)
+						time.sleep(.2)
 	
 	# Collect chat history to build fine-tuning datasets
 	"""
