@@ -22,10 +22,13 @@ directory_prefix = "./channel_history_"
 last_n = 10
 
 def replaceTags(message):
+	realName = None
 	if '<@!' in message:
-		print(client.fetch_user(int(message[message.find('!') + 1:message.find('>')])))
+		realName = await client.fetch_user(int(message[message.find('!') + 1:message.find('>')]))
+		print(realName)
 	elif '<@' in message:
-		print(client.fetch_user(int(message[message.find('@') + 1:message.find('>')])))
+		realName = await client.fetch_user(int(message[message.find('@') + 1:message.find('>')]))
+		print(realName)
 
 	return re.sub(r'<@.*>', tag_replace, message)
 
