@@ -21,7 +21,7 @@ AI Discord chat bot using OpenAI fine-tuning
 5. Save your bot's token (Under the bot tab, as pictured below) as DISCORD_TOKEN in .env
 <img width="1255" alt="Screen Shot 2022-03-29 at 3 51 11 PM" src="https://user-images.githubusercontent.com/1606986/160719544-151966fb-6b21-4a2b-afe0-60a83a82faff.png">
 
-### Populate the required variables in `.env`
+### Populate the required variables in `.env`:
 - `DISCORD_TOKEN`: As specified above, the unique token for the Discord bot you've created
 - `BOT_USERNAME`: Sets the command which the bot will respond to. For example if `BOT_USERNAME = test`, then the bot will respond to messages starting with `!test`
 - `OPENAI_KEY`: OpenAI API Key
@@ -44,3 +44,8 @@ AI Discord chat bot using OpenAI fine-tuning
 `openai api fine_tunes.create -t "channel_[channel_name]/[user]_prepared.jsonl" --batch_size 1`
 
 - Once the model is created, update `.env` to use this model, and interact with the bot using `![BOT_USER]`. For example, if your bot is based on the Discord user `test`, then the bot will respond to messages starting with `!test`
+
+
+## Questions?
+
+Contact tv#3636 on Discord with any questions
