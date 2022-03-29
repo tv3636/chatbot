@@ -1,4 +1,9 @@
-import os, discord, openai, time, json, re
+import os
+import discord
+import openai
+import time
+import json
+import re
 from dotenv import load_dotenv
 from discord.ext import tasks
 from collections import defaultdict
@@ -20,6 +25,7 @@ delimiter = '\n###\n'
 directory_prefix = "./channel_history_"
 last_n = 10
 
+# Submits a prompt to OpenAI and returns a response
 def ask(sender, question):
 	global model
 	
@@ -37,6 +43,24 @@ def ask(sender, question):
 
 	return response.choices[0].text.strip().replace(delimiter, '')
 
+# Sends a message in Discord
+async def send(message, channel):
+	if message and message != delimiter.strip() and message[0] != '<':
+		await channel.send(message)
+		time.sleep(.2)
+
+# Replaces tags in bot response with plain usernames
+async def clean(response):
+	if '<@' in response:
+		for match in re.findall('<@!?([0-9]*)>', response):
+			username = await client.fetch_user(int(match))
+			response = response.replace(
+				response[response.find('<'):response.find('>') + 1], 
+				'@' + str(username)[:str(username).find('#')]
+			)
+
+	return response
+
 @client.event
 async def on_ready():
 	print(f'{client.user} has connected to Discord!')
@@ -45,7 +69,6 @@ async def on_ready():
 async def on_message(message):
 
 	# Bot response with OpenAI tuned model
-
 	if not message.author.bot and botUser and message.content.split()[0] == '!' + botUser:
 
 		sender = str(message.author).split('#')[0]
@@ -64,23 +87,13 @@ async def on_message(message):
 			if not validResponse:
 				break
 			elif response:
-				if '<@' in response:
-					for match in re.findall('<@!?([0-9]*)>', response):
-						username = await client.fetch_user(int(match))
-						response = response.replace(response[response.find('<'):response.find('>') + 1], '@' + str(username)[:str(username).find('#')])
+				response = await clean(response)
 
-				if '\n' in response:
-					for out in response.split('\n'):
-						if out and out != '###' and out[0] != '<':
-							await message.channel.send(out)
-							time.sleep(.2)
-				else:
-					if response and response != '###' and response[0] != '<':
-						await message.channel.send(response)
-						time.sleep(.2)
+				for out in response.split('\n'):
+					await send(out.strip(), message.channel)
+
 	
-	# Collect chat history to build fine-tuning datasets
-	"""
+	# Save chat history to build fine-tuning datasets
 	elif not message.author.bot and message.content.split()[0] == '!history':
 		last = []
 		lastSender = None
@@ -127,7 +140,6 @@ async def on_message(message):
 
 			if len(last) > last_n:
 				last = last[1:]
-	"""
 
 
 client.run(discordToken)
